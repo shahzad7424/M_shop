@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mshop.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class MusersContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public MusersContext(DbContextOptions<MusersContext> options)
             : base(options)
         {
         }
