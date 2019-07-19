@@ -6,15 +6,16 @@
 }
     <div class="container col-sm-5 border-danger">
         <br />
+
+        <h1 class="text-center text-white">M <i class="fas fa-laugh-wink"></i> Shop</h1>
+        <h3 class="text-center text-white">Login</h3>
         <br />
-        <h1 class="text-center text-primary">M Shop</h1>
-        <br />
-        <br />
+
         <div class="center">
             <form asp-action="Login">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label for="sel1">Select Role</label>
+                    <label class="text-white" for="sel1">Select Role</label>
                     <select class="form-control" id="sel1">
                         <option>Please Select One </option>
                         <option value="">Admin</option>
@@ -24,26 +25,29 @@
                     <span asp-validation-for="Username" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Username" class="control-label"></label>
+                    <label class="text-white control-label" asp-for="Username"></label>
                     <input asp-for="Username" class="form-control" placeholder="Enter Name..." />
                     <span asp-validation-for="Username" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Password" class="control-label"></label>
+                    <label asp-for="Password" class="control-label text-white"></label>
                     <input asp-for="Password" class="form-control" type="password" placeholder="Enter Password..." />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
-                <div class="form-check custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="customCheck" name="example1">
+                <div class="form-check text-white custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input text-danger" id="customCheck" name="example1">
                     <label class="custom-control-label" for="customCheck">Keep Me Logged In.</label>
                 </div>
                 <br />
                 <div class="form-group">
-                    <input type="submit" value="      Login      " class="btn btn-block btn-lg btn-outline-primary" />
+                    <input type="submit" value="      Login      " class="btn btn-block btn-lg btn-outline-danger" />
                 </div>
-                <div class="form-group" >
-                    <label class="control-label" > If You Forget Password <a href="#">Click Here</a></label>
+                <div class="form-group">
+                    <input type="submit" value="      Register      " class="btn btn-block btn-lg btn-danger" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label text-white"> If You Forget Password <a href="#">Click Here</a></label>
                 </div>
 
 

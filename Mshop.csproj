@@ -13,4 +13,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="wwwroot\SystemData\CategoryPicture\" />
+    <Folder Include="wwwroot\SystemData\ItemPicture\" />
+    <Folder Include="wwwroot\SystemData\ProfilePicture\" />
+  </ItemGroup>
+
 </Project>

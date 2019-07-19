@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,18 +15,22 @@ namespace Mshop.Controllers
     public class MAdminController : Controller
     {
         private readonly mshopContext _context;
+        private readonly IHostingEnvironment _env;
 
-        public MAdminController(mshopContext context)
+        public MAdminController(mshopContext context , IHostingEnvironment env)
         {
             _context = context;
+            _env = env;
         }
         public IActionResult Login()
         {
             return View();
         }
+    
 
         // GET: MAdmin
-        public async Task<IActionResult> Index()
+
+        public async Task<IActionResult> ExistingCategory()
         {
             return View(await _context.MCategory.ToListAsync());
         }
@@ -47,7 +54,7 @@ namespace Mshop.Controllers
         }
 
         // GET: MAdmin/Create
-        public IActionResult Create()
+        public IActionResult AddCategory()
         {
             return View();
         }
@@ -57,13 +64,29 @@ namespace Mshop.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Picture,Status,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] MCategory mCategory)
+        public async Task<IActionResult> AddCategory([Bind("Name,Picture")]MCategory mCategory, IFormFile Picture)
         {
             if (ModelState.IsValid)
             {
+                if (Picture != null)
+                {
+                    string FileName = Guid.NewGuid().ToString() + Path.GetExtension(Picture.FileName);
+                    string FilePath = _env.WebRootPath + "~/SystemData/CategoryPicture/";
+                    FileStream FS = new FileStream(FilePath + FileName, FileMode.Create);
+                    Picture.CopyTo(FS);
+                    FS.Close();
+                    mCategory.Picture = "~/SystemData/CategoryPicture/" + FileName;
+                }
+
+                mCategory.Status = "Active";
+                mCategory.CreatedDate = DateTime.Now;
+                mCategory.CreatedBy = "Self";
+                mCategory.ModifiedDate = DateTime.Now;
+                mCategory.ModifiedBy = "Self";
+
                 _context.Add(mCategory);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ExistingCategory));
             }
             return View(mCategory);
         }
@@ -114,7 +137,7 @@ namespace Mshop.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ExistingCategory));
             }
             return View(mCategory);
         }
@@ -145,12 +168,16 @@ namespace Mshop.Controllers
             var mCategory = await _context.MCategory.FindAsync(id);
             _context.MCategory.Remove(mCategory);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ExistingCategory));
         }
 
         private bool MCategoryExists(int id)
         {
             return _context.MCategory.Any(e => e.Id == id);
+        }
+        public IActionResult Dashboard()
+        {
+            return View();
         }
     }
 }
