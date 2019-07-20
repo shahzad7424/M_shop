@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -20,19 +20,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="Picture" class="control-label"></label>
-                <input asp-for="Picture" class="form-control" type="file"  multiple/>
+                <input asp-for="Picture" class="form-control" type="file" multiple />
                 <span asp-validation-for="Picture" class="text-danger"></span>
             </div>
-           
+
             <div class="form-group">
                 <input type="submit" value="Add Category" class="btn btn-danger" />
+            </div>
+            <div class="form-group">
+                <a class="btn btn-outline-danger" asp-action="ExistingCategory">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a class="btn btn-outline-danger" asp-action="ExistingCategory">Back to List</a>
+  
 </div>
 
 @section Scripts {
