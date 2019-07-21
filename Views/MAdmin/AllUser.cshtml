@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "AllUser";
+      Layout = "_AdminLayout";
 }
 
 <h1>All User</h1>
@@ -10,6 +11,9 @@
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProfilePicture)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Username)
             </th>
@@ -31,24 +35,16 @@
             <th>
                 @Html.DisplayNameFor(model => model.CreatedBy)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModifiedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModifiedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProfilePicture)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
+          
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                <img src="@ViewBag.ProfilePicture" class="rounded" style="width:100px; " />
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Username)
             </td>
@@ -70,22 +66,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedBy)
             </td>
+            
             <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProfilePicture)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-outline-warning" title="Edit User"><i class="fa fa-pen-square" aria-hidden="true"></i></a> |
+                <a asp-action="DetailUser" asp-route-id="@item.Id" class="btn   btn-outline-info" title="Detail User"><i class="fa fa-eye" aria-hidden="true"></i></a> |
+                <a asp-action="DeleteUser" id="delcat" asp-route-id="@item.Id" class="btn   btn-outline-danger" title="Delete User"><i class="fa fa-trash" aria-hidden="true"></i></a>
             </td>
         </tr>
 }

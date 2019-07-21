@@ -277,7 +277,7 @@ namespace Mshop.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MItemExists(mCategory.Id))
+                    if (!MUserExists(mCategory.Id))
                     {
                         return NotFound();
                     }
@@ -317,7 +317,7 @@ namespace Mshop.Controllers
             return RedirectToAction(nameof(ExistingCategory));
         }
 
-        private bool MItemExists(int id)
+        private bool MUserExists(int id)
         {
             return _context.MCategory.Any(e => e.Id == id);
         }
@@ -373,7 +373,7 @@ namespace Mshop.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MItemExists(mitem.Id))
+                    if (!MUserExists(mitem.Id))
                     {
                         return NotFound();
                     }
@@ -415,11 +415,99 @@ namespace Mshop.Controllers
 
             return RedirectToAction(nameof(ExistingItem));
         }
-        public IList<string> CategoryNamesList()
+
+
+        //public IList<string> CategoryNamesList()
+        //{
+        //    return _context.MCategory.Select(a => a.Name).ToList();
+        //}
+
+        public async Task<IActionResult> AllUser()
         {
-            return _context.MCategory.Select(a => a.Name).ToList();
+            return View(await _context.MUser.ToListAsync());
         }
+        public async Task<IActionResult> EditUser(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var muser = await _context.MUser.FindAsync(id);
+            if (muser == null)
+            {
+                return NotFound();
+            }
+            ViewBag.ProfilePicture = muser.ProfilePicture;
+            return View(muser);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditUser(int id, MUser muser, IFormFile ProfilePicture)
+        {
+            if (id != muser.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (ProfilePicture != null)
+                    {
+                        string FileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
+                        string FilePath = _env.WebRootPath + "/SystemData/ProfilePicture/";
+                        FileStream FS = new FileStream(FilePath + FileName, FileMode.Create);
+                        ProfilePicture.CopyTo(FS);
+                        FS.Close();
+                        muser.ProfilePicture = "/SystemData/ProfilePicture/" + FileName;
+                    }
+                    _context.Update(muser);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!MUserExists(muser.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(AllUser));
+            }
+            return View(muser);
+        }
+        public async Task<IActionResult> DetailUser(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var muser = await _context.MUser
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (muser == null)
+            {
+                return NotFound();
+            }
+            ViewBag.ProfileImage = muser.ProfilePicture;
+            return View(muser);
+        }
+        public async Task<IActionResult> DeleteUser(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            _context.MUser.Remove(_context.MUser.Find(id));
+            await _context.SaveChangesAsync();
 
 
+            return RedirectToAction(nameof(AllUser));
+        }
     }
 }
