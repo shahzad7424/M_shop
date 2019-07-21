@@ -14,7 +14,7 @@
         <div class="center">
             <form asp-action="Login">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
+                @*<div class="form-group">
                     <label class="text-white" for="sel1">Select Role</label>
                     <select class="form-control" id="sel1">
                         <option>Please Select One </option>
@@ -23,7 +23,7 @@
 
                     </select>
                     <span asp-validation-for="Username" class="text-danger"></span>
-                </div>
+                </div>*@
                 <div class="form-group">
                     <label class="text-white control-label" asp-for="Username"></label>
                     <input asp-for="Username" class="form-control" placeholder="Enter Name..." />
@@ -41,7 +41,7 @@
                 </div>
                 <br />
                 <div class="form-group">
-                    <input type="submit" value="      Login      " class="btn text-white btn-block btn-lg btn-outline-danger" />
+                    <input asp-action="Login" type="submit" value="      Login      " class="btn text-white btn-block btn-lg btn-outline-danger" />
                 </div>
                 <div class="form-group">
                     <a asp-action="Register" class="btn btn-block btn-lg btn-danger">      Register      </a>
