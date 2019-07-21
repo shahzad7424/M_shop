@@ -167,6 +167,9 @@ namespace Mshop.Models
                 entity.Property(e => e.Username)
                     .HasColumnName("username")
                     .HasMaxLength(50);
+                entity.Property(e => e.Email)
+                  .HasColumnName("email")
+                  .HasMaxLength(50);
             });
         }
     }

@@ -16,5 +16,8 @@ namespace Mshop.Models
         public DateTime? ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
         public string ProfilePicture { get; set; }
+      
+        public string Email { get; set; }
+
     }
 }

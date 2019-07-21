@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,8 +27,112 @@ namespace Mshop.Controllers
         {
             return View();
         }
-    
+        public bool AuthenticateUser()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("Username")))
+            {
+                return false;
+            }
 
+            return true;
+        }
+        [HttpPost]
+        public IActionResult Login(MUser muser)
+        {
+            MUser LoggedInUser = _context.MUser.Where(abc => abc.Username == muser.Username && abc.Password == muser.Password).FirstOrDefault();
+
+            if (LoggedInUser == null)
+            {
+                ViewBag.Message = "Invalid Username or Password";
+                return View();
+            }
+            HttpContext.Session.SetString("Username", LoggedInUser.Username);
+            HttpContext.Session.SetString("UserRole", LoggedInUser.Role);
+            HttpContext.Session.SetString("UserDisplayName", LoggedInUser.DisplayName);
+
+            if (LoggedInUser.Role == "Admin" || LoggedInUser.Role == "staff")
+            {
+                return RedirectToAction("Dashboard");
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+        }
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(MUser muser, IFormFile ProfilePicture)
+        {
+            if (ModelState.IsValid)
+            {
+                if (ProfilePicture != null)
+                {
+                    string FileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
+                    string FilePath = _env.WebRootPath + "/SystemData/ProfilePicture/";
+                    FileStream FS = new FileStream(FilePath + FileName, FileMode.Create);
+                    ProfilePicture.CopyTo(FS);
+                    FS.Close();
+                    muser.ProfilePicture = "/SystemData/ProfilePicture/" + FileName;
+                }
+                muser.Role = "Staff";
+                muser.Status = "Active";
+                muser.CreatedDate = DateTime.Now;
+                muser.CreatedBy = "Self";
+                muser.ModifiedDate = DateTime.Now;
+                muser.ModifiedBy = "Self";
+
+                _context.Add(muser);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(muser);
+        }
+        [HttpGet]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult ForgetPassword(MUser muser)
+        {
+            
+                try
+                {
+                    MailMessage Email = new MailMessage();
+                    Email.From = new MailAddress("shahzadaptech143@gmail.com", "M Shahzad");
+
+                    Email.To.Add(new MailAddress(muser.Email));
+                    //string[] allccemails = CCEmails.Split(",");
+
+                    //Email.CC.Add(new MailAddress("info@thetasolutions.pk"));
+                    //Email.Bcc.Add(new MailAddress("info@thetasolutions.co.uk"));
+
+                    Email.Subject = "Password Recovery";
+                    Email.IsBodyHtml = true;
+
+                    Email.Body = "Hi <b style='background-color:yellow;'>" + muser.DisplayName + "</b>,<br><br>Here Is you Password" + muser.Password + "<br><br>---<br>Theta Team />";
+
+                    SmtpClient SMTPServer = new SmtpClient();
+                    SMTPServer.Host = "smtp.gmail.com";
+                    SMTPServer.Port = 587;
+                    SMTPServer.EnableSsl = true;
+                    SMTPServer.Credentials = new System.Net.NetworkCredential("shahzadaptech143@gmail.com", "accp12345");
+
+                    SMTPServer.Send(Email);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+        
+           
+            return RedirectToAction(nameof(Login));
+        }
         // GET: MAdmin
 
         public async Task<IActionResult> ExistingCategory()
@@ -216,9 +321,16 @@ namespace Mshop.Controllers
         {
             return _context.MCategory.Any(e => e.Id == id);
         }
-        public IActionResult Dashboard()
+        public IActionResult Index()
         {
-            return View();
+            if (AuthenticateUser())
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
         public async Task<IActionResult> EditItem(int? id)
         {
@@ -303,5 +415,11 @@ namespace Mshop.Controllers
 
             return RedirectToAction(nameof(ExistingItem));
         }
+        public IList<string> CategoryNamesList()
+        {
+            return _context.MCategory.Select(a => a.Name).ToList();
+        }
+
+
     }
 }
